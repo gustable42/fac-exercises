@@ -1,0 +1,3 @@
+.data
+    wrong: .asciiz "Errou\n"
+    right: .asciiz "Acertou\n"

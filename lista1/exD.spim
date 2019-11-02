@@ -1,0 +1,61 @@
+.data
+    A: .asciiz "A\n"
+    B: .asciiz "B\n"
+    C: .asciiz "C\n"
+    D: .asciiz "D\n"
+    E: .asciiz "E\n"
+
+.text
+
+main:
+    li $v0, 5
+    syscall
+    move $s0, $v0
+
+    slti $t0, $s0, 86
+    bne $t0, $zero, caseB
+
+    li $v0, 4
+    la $a0, A
+    syscall
+
+    li $v0, 10
+    syscall
+
+caseB:
+    slti $t0, $s0, 61
+    bne $t0, $zero, caseC
+    li $v0, 4
+    la $a0, B
+    syscall
+
+    li $v0, 10
+    syscall
+
+caseC:
+    slti $t0, $s0, 36
+    bne $t0, $zero, caseD
+    li $v0, 4
+    la $a0, C
+    syscall
+
+    li $v0, 10
+    syscall
+
+caseD:
+    slti $t0, $s0, 1
+    bne $t0, $zero, caseE
+    li $v0, 4
+    la $a0, D
+    syscall
+
+    li $v0, 10
+    syscall
+
+caseE:
+    li $v0, 4
+    la $a0, E
+    syscall
+
+    li $v0, 10
+    syscall

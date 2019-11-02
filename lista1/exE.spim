@@ -1,0 +1,53 @@
+.data
+    newline: .asciiz "\n"
+ 
+.text
+ 
+main:
+    li $s0, 7
+    li $v0, 5
+    syscall
+    move $s1, $v0 #$s1 = quantidade de m^3
+ 
+    slti $t0, $s1, 101 # $t0 = 1 if $s1 < 101; $t0 = 0 if $s1 >= 101
+    beq $t0, $zero, caseD # ($t0 == 0) go to caseD
+   
+    slti $t0, $s1, 31 # $t0 = 1 if $s1 < 31; $t0 = 0 if $s1 >= 31
+    beq $t0, $zero, caseC # ($t0 == 0) go to caseC
+   
+    slti $t0, $s1, 11 # $t0 = 1 if $s1 < 11; $t0 = 0 if $s1 >= 11
+    beq $t0, $zero, caseB # ($t0 == 0) go to caseB
+   
+    jal exit
+ 
+caseB:
+    addi $t0, $s1, -10
+    mul $t0, $t0, 1
+    add $s0, $s0, $t0
+    jal exit
+ 
+caseC:
+    addi $t0, $s1, -30
+    mul $t0, $t0, 2
+    add $s0, $s0, $t0
+    addi $s0, $s0, 20
+    jal exit
+ 
+caseD:
+    addi $t0, $s1, -100
+    mul $t0, $t0, 5
+    add $s0, $s0, $t0
+    addi $s0, $s0, 160
+    jal exit
+ 
+exit:
+    li $v0, 1
+    move $a0, $s0
+    syscall
+ 
+    li $v0, 4
+    la $a0, newline
+    syscall
+ 
+    li $v0, 10
+    syscall
