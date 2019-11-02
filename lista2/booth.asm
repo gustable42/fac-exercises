@@ -31,7 +31,11 @@ main:
     j END
 
 multfac:
-
+    #get lsd from Q
+    #$t0 = lsd - q0
+    #if $t0 == 0 case_default
+    #if $t0 < 0 case_01
+    #if $t0 > 0 case_10
 
 getn:
     addi $s4, $s4, 1
@@ -52,6 +56,11 @@ case_10:
     j case_default
 
 case_default:
+    # fazer o shift AQq0
     addi $s4, $s4, -1
     beq $s4, $zero, END
     j multfac
+
+END:
+    #colocar A em hi, Q em lo
+    #printar o registrador de hi lo
