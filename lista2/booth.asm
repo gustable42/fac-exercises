@@ -1,65 +1,40 @@
-.data
-    newline: .asciiz "\n"
+############### Desenvolvido por ###############
+## Gustavo Veloso - 
+## Leonardo Barreiros - 15/0135521
+################################################
 
-    hi: .asciiz "Registrador da porção mais significativa:\n"
-    lo: .asciiz "Registrador da porção menos significativa:\n"
-    # 	Variáveis Syscall
-.text
 
-main:
-    #inicializando o acumulador e o q0
-	li $s0, 0 # q0 = 0
-	li $s1, 0 # acc = 0
-    li $s4, 0 # n = 0
-	
-	#setando o syscall para leitura do multiplicando e multiplicador
-	li $v0, 5
-	syscall
-	move $s2, $v0 # Multiplicando = input
-	
-	li $v0, 5
-	syscall
-	move $s3, $v0 # Multiplicador = input
+################################################ Descrição da lógica ###################################################
 
-    #setando em n o tamanho do inteiro com maior número de bits
-    bne $s2, $zero, getn
-    bne $s3, $zero, getn
-    j END
-
-multfac:
  # --> srl
  # 0000 0001 [0] <-- bit de sinal 
  
- # O ultimo bit da cadeia é a representação do bit de 
- # sinal e portanto devemos armazena-lo para que 
- # não seja perdido quando deslocado para direita
- # toda vez que o bit de sinal muda é acrescentado 
- # no bit mais significativo o valor do bit de sinal, 
- # portanto
+ # O ultimo bit da cadeia é a representação do bit de sinal e portanto devemos armazena-lo para que 
+ # não seja perdido quando deslocado para direita toda vez que o bit de sinal muda é acrescentado 
+ # no bit mais significativo o valor do bit de sinal, portanto:
 
  # 0000 0001 [0]
  # srl
  # 1000 0000 [1]
- # representação em assembly
-
+ 
+ # representação em assembly da memória
+ # ------------------------------------------------------------------
  #       mais significativo   menos significativo
  # 0 x [xxxx xxxx xxxx xxxx] [xxxx xxxx xxxx xxxx] 
-
- # Para identificar o bit menos siginificativo iremos 
- # usar uma especie de mascara para sempre pegar o menor bit
- # E atualizando o multiplicador para que seja pego o menor 
- # valor em relação ao ultimo digito
+ # ------------------------------------------------------------------
+ 
+ # Para identificar o bit menos siginificativo iremos usar uma especie de mascara para sempre pegar o menor bit
+ # E atualizando o multiplicador para que seja pego o menor valor em relação ao ultimo digito
 
  # exemplo:
  # 7 AND mask
  # 7 -> 0 x 0000 0000 0000 0000 0000 0000 0000 0111
  # mask ->  0000 0000 0000 0000 0000 0000 0000 0001
 
- # quando o bit for igual retorna 1 se o bit for diferente retorna 0
- # srl no multiplicador original para ser uma especie de pop()
- # este bit deve ser acrescentado ao final do valor do multiplicando
- # Para isso ser feito podemos fazer um sll no bit e fazer um add  com o multiplicando original
- # ou inves de sll podemos usar mul e repetir o restante do processo
+ # Quando o bit for igual retorna 1 se o bit for diferente retorna 0 srl no multiplicador original para 
+ # ser uma especie de pop(). Este bit deve ser acrescentado ao final do valor do multiplicando.
+ # Para isso ser feito podemos fazer um sll no bit e fazer um add  com o multiplicando original,
+ # ou inves de sll podemos usar mul e repetir o restante do processo.
 
  # 7 ->    0 x 0000 0000 0000 0000 0000 0000 0000 0011
  # mask -> 0 x 0000 0000 0000 0000 0000 0000 0000 0001
@@ -74,11 +49,12 @@ multfac:
  # result -> 0x0000 0000 0000 0000 0000 0000 1000 0011
 
 
-## quantidade de interações necessárias ##
- # Deve-se ter um interador por fora desta operação para que seja contado
- # a quantidade de interações para que tenha um ponto de parada
- # A quantidade de interações irá se dar pela quantidade de bits que o multiplicando ou multiplicador, escolhendo sempre o maior
- # exemplo
+########################### quantidade de interações necessárias ###########################
+ # Deve-se ter um interador por fora desta operação para que seja contado a quantidade 
+ # de interações para que tenha um ponto de parada. A quantidade de interações irá se 
+ # dar pela quantidade de bits que o multiplicando ou multiplicador, escolhendo sempre o maior.
+ # Exemplo:
+
  # 0010 0001 x 0000 0011 -> para na 8ª interação
  # A quantidade de inteções é limitada pela quantidade de #### interações necessárias ou menor que 32 #####
 
@@ -105,6 +81,38 @@ multfac:
 # passo4: 
     # beq interador < 33, exit
     
+########################################################################################################################
+
+.data
+    newline: .asciiz "\n"
+
+    hi: .asciiz "Registrador da porção mais significativa [a]:\n"
+    lo: .asciiz "Registrador da porção menos significativa [b]:\n"
+    produto: .asciiz "Multiplicação de a por b:\n"
+    # 	Variáveis Syscall
+.text
+
+main:
+    #inicializando o acumulador e o q0
+	li $s0, 0 # q0 = 0
+	li $s1, 0 # acc = 0
+    li $s4, 0 # n = 0
+	
+	#setando o syscall para leitura do multiplicando e multiplicador
+	li $v0, 5
+	syscall
+	move $s2, $v0 # Multiplicando = input
+	
+	li $v0, 5
+	syscall
+	move $s3, $v0 # Multiplicador = input
+
+    #setando em n o tamanho do inteiro com maior número de bits
+    bne $s2, $zero, getn
+    bne $s3, $zero, getn
+    j END
+
+multfac:
     
     #get lsd from Q
     #$t0 = lsd - q0
@@ -160,6 +168,15 @@ END:
     li $v0, 1
     move $a0, $s6
     syscall # print valor da menor porçao
+
+    la $a0, produto
+
+    li $v0, 4 # string do produto
+    syscall
+
+    li $v0, 5
+    move $a0, $s7 # valor do produto
+    syscall
 
     la $a0, newline
 
