@@ -77,15 +77,9 @@ multfac:
 ## quantidade de interações necessárias ##
  # Deve-se ter um interador por fora desta operação para que seja contado
  # a quantidade de interações para que tenha um ponto de parada
- # Portanto para termos a quantidade de interadores devemos fatorar o numero,
- # ou seja, divir por 2
- # e contar a quantidade de divisões necessárias
+ # A quantidade de interações irá se dar pela quantidade de bits que o multiplicando ou multiplicador, escolhendo sempre o maior
  # exemplo
- # faremos isso com um for e srl e a cada 1 existente teremos um contador que sera incrementado
- # até que o valor seja igual a 0
- # 7 --> 0111 -> 0 + 2^2 + 2^1 ^ 2^0 --> 0 + 4 + 2 + 1 = 7
- # contador <= 4 interações
- # o contador irá começar com 1 para tratar em caso do bit mais significativo do multiplicador seja igual a 0
+ # 0010 0001 x 0000 0011 -> para na 8ª interação
  # A quantidade de inteções é limitada pela quantidade de #### interações necessárias ou menor que 32 #####
 
 
