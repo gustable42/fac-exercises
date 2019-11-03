@@ -1,5 +1,5 @@
 ############### Desenvolvido por ###############
-## Gustavo Veloso - 
+## Gustavo Veloso - 17/0065251
 ## Leonardo Barreiros - 15/0135521
 ################################################
 
@@ -49,14 +49,14 @@
  # result -> 0x0000 0000 0000 0000 0000 0000 1000 0011
 
 
-########################### quantidade de interações necessárias ###########################
- # Deve-se ter um interador por fora desta operação para que seja contado a quantidade 
- # de interações para que tenha um ponto de parada. A quantidade de interações irá se 
+########################### quantidade de iterações necessárias ###########################
+ # Deve-se ter um iterador por fora desta operação para que seja contado a quantidade 
+ # de iterações para que tenha um ponto de parada. A quantidade de iterações irá se 
  # dar pela quantidade de bits que o multiplicando ou multiplicador, escolhendo sempre o maior.
  # Exemplo:
 
  # 0010 0001 x 0000 0011 -> para na 8ª interação
- # A quantidade de inteções é limitada pela quantidade de #### interações necessárias ou menor que 32 #####
+ # A quantidade de inteções é limitada pela quantidade de #### iterações necessárias ou menor que 32 #####
 
 
 ### esqueleto da função ###
@@ -89,7 +89,6 @@
     hi: .asciiz "Registrador da porção mais significativa [a]:\n"
     lo: .asciiz "Registrador da porção menos significativa [b]:\n"
     produto: .asciiz "Multiplicação de a por b:\n"
-    # 	Variáveis Syscall
 .text
 
 main:
@@ -101,13 +100,15 @@ main:
 	#setando o syscall para leitura do multiplicando e multiplicador
 	li $v0, 5
 	syscall
-	move $s2, $v0 # Multiplicando = input
+	move $s2, $v0 # Multiplicando = input (M)
 	
 	li $v0, 5
 	syscall
-	move $s3, $v0 # Multiplicador = input
+	move $s3, $v0 # Multiplicador = input (Q)
 
     #setando em n o tamanho do inteiro com maior número de bits
+
+    jal getn
     bne $s2, $zero, getn
     bne $s3, $zero, getn
     j END
@@ -121,28 +122,38 @@ multfac:
     #if $t0 > 0 case_10
 
 getn:
-    addi $s4, $s4, 1 # quantidade de interações 
-    srl $t0, $s2, 1 # 
-    srl $t1, $s3, 1
+    addi $a1, $a1, 1 # quantidade de iterações 
+    srl $a0, $a0, 1
     
     bne $t0, $zero, getn
-    bne $t1, $zero, getn
 
+    move $v0, $a1
+    jr $ra
+
+case_01:
+    add $s1, $s1, $s2
+    j case_default
+
+case_10:
+    sub $s1, $s1, $s2
+    j case_default
+
+case_default:
+    # fazer o shift AQq0
+    #get LSD from A and pop off the value from it
+    li $t0, 1
+	and $t0, $s1, $t0
+    srl $s1, $s1, 1
+
+    #get LSD from Q, sum LSD from A to Q and pop off from it
+    li $t1, 1
+    and $t1, $s3, $t1
+    srl $s3, $s3, 1
+    move $s0, $t1
+
+    addi $s4, $s4, -1
+    beq $s4, $zero, END
     j multfac
-
-    case_01:
-        add $s1, $s1, $s2
-        j case_default
-
-    case_10:
-        sub $s1, $s1, $s2
-        j case_default
-
-    case_default:
-        # fazer o shift AQq0
-        addi $s4, $s4, -1
-        beq $s4, $zero, END
-        j multfac
 
 END:
     #colocar A em hi, Q em lo
